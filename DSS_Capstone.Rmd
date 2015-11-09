@@ -264,30 +264,9 @@ The **qdap** package provides a function called **polarity**, which can be used 
 analyze and quantify the sentiment of a text, and returns a sentiment polarity score 
 between -1 (for most negative sentiments) and 1 (for most positive sentiments).
 
-The polarity score returned by the **polarity** function is dependent upon the 
-polarity dictionary used, and it defaults to the word polarity dictionary used by 
+The **polarity** function is dependent on the polarity dictionary used, which it defaults to the word polarity dictionary used by 
 [Hu & Liu (2004)](https://www.cs.uic.edu/~liub/FBS/sentiment-analysis.html).
 
-The polarity scores can be assigned at the per-sentence level, or as a whole 
-text level.
-
-The inital Review Sentiment Polarity Model (Model 1) used the default polarity dictionary, and the review text was analyzed as a whole to derive the sentiment polarity score.
-
-The initial results showed that the polarity scores were positively skewed, 
-where positive scores were assigned to many of the negative reviews.  The variances
-of the polarity scores for reviews with the same star rating were quite high as well.
-
-To ensure that the **polarity** function takes into consideration the typical language
-used by the Yelp reviewers, I created a custom restaurant-reviews polarity dictionary that extends the default dictionary with positive and negative bigrams and trigrams occurring most often in the reviews, such as "never be back", "can't wait to be back", and whenever sentiment is more extreme in positivity or negativity, I would tune the model by assigning higher weightages.
-
-I also explored the impact of analyzing sentiment polarity at the sentence level versus whole text level.
-
-For the final Review Sentiment Polarity Model (Model 2), this custom polarity dictionary was used, and the polarity of each sentence of the review text was analyzed, and their average value was taken as the review's sentiment polarity score.
-
-The distribution of sentiment polarity scores by star ratings of the two models 
-is shown in the two box plots of Figure 3.   
-
-\ 
 
 ```{r Polarity Scoring, echo=FALSE, cache=TRUE}
 #
@@ -447,6 +426,22 @@ if (file.exists("polRevs_Model1") & file.exists("polRevs_Model2")) {
 }
 ```
 
+The inital Review Sentiment Polarity Model (Model 1) used the default polarity dictionary, and the review text was analyzed as a whole.  The results revealed that overly positive scores were assigned to many of the negative reviews.  The variances of the polarity scores for reviews with the same star rating were quite high as well.
+
+To enable the **polarity** function to consider the type of language
+used by the reviewers, I created a restaurant-reviews context dictionary that extends the default dictionary with positive and negative n-grams occurring often in reviews, such as "never be back", "can't wait to be back", and also tune the model by adjusting the weightages.  The following is an example output of the **polarity** function.
+
+```{r echo=T}
+polarity(sent_detect("This is worst place ever. Crap Food. Horrible service."),
+         polarity.frame = REVIEWS_DICT, constrain=T)
+```
+
+For the final Review Sentiment Polarity Model (Model 2), this custom polarity dictionary was used, and the polarity of each sentence of the review text was analyzed, and their average value was taken as the review's sentiment polarity score.
+
+The distribution of sentiment polarity scores by star ratings of the two models 
+is shown in the two box plots of Figure 3.   
+
+\ 
 
 ```{r Polarity Plot 1, echo=FALSE, fig.height=3.5, fig.cap="Polarity Box Plots by Star Ratings", cache=TRUE}
 #
