@@ -57,7 +57,7 @@ total word count, positive words count, negative words count.
 7. Select three classification methods and predict using the test dataset
 8. Compare and tabulate the accuracy results of the three methods.
 
-At the end, the selected sentiment polarity modelis the model offered by the 
+At the end, the selected sentiment polarity model is the model offered by the 
 [qdap](https://cran.r-project.org/web/packages/qdap/index.html) R package by Tyler Rinker, and the three selected classification methods were RandomForest (rf), Naive-Bayes (nb), and Penalized Multinomial Regression (multinom) which would be trained and tested using the [caret](https://cran.r-project.org/web/packages/caret/index.html) R package.
 
 
@@ -431,7 +431,7 @@ The inital Review Sentiment Polarity Model (Model 1) used the default polarity d
 To enable the **polarity** function to consider the type of language
 used by the reviewers, I created a restaurant-reviews context dictionary that extends the default dictionary with positive and negative n-grams occurring often in reviews, such as "never be back", "can't wait to be back", and also tune the model by adjusting the weightages.  The following is an example output of the **polarity** function.
 
-```{r echo=T}
+```{r echo=TRUE, collapse=TRUE}
 polarity(sent_detect("This is worst place ever. Crap Food. Horrible service."),
          polarity.frame = REVIEWS_DICT, constrain=T)
 ```
@@ -454,8 +454,8 @@ options(warn = -1)
 p1 <- ggplot(Model1_Revs, aes(x = stars, y = ave.polarity, fill = stars)) +
     geom_boxplot(outlier.size=1) + 
     coord_cartesian(ylim=c(-1, 1)) +
-    labs(list(title = "Model 1: Overall Text Polarity + Default Dict",
-              y = "Overall Text Polarity Score", x = "Star Rating"))
+    labs(list(title = "Model 1: Whole Text Polarity + Default Dict",
+              y = "Whole Text Polarity Score", x = "Star Rating"))
 p1 <- p1 + theme(plot.title = element_text(size = rel(0.75)))
 p1 <- p1 + theme(axis.title = element_text(size = rel(0.75)))
 p1 <- p1 + theme(axis.text = element_text(size = rel(0.75)))
@@ -798,24 +798,6 @@ Model3_mnlr_fit <- train(thumbs ~ pos.words.ct + neg.words.ct +
 
 Model3_mnlr_predicted <- predict(Model3_mnlr_fit, newdata=xval_ds)
 Model3_mnlr_cm <- confusionMatrix(Model3_mnlr_predicted, xval_ds$thumbs)
-
-accuracy_df <- data.frame( RandomForest = Model3_rf_cm$overall["Accuracy"],
-#                          NaiveBayes = Model3_nb_cm$overall["Accuracy"],
-                          Multinomial = Model3_mnlr_cm$overall["Accuracy"])
-
-# kable(t(Model3_rf_cm$byClass[c("Pos Pred Value", "Sensitivity","Specificity")]),
-#      digits = 4,
-#      caption = "Model 3 - RandomForest Prediction Statistics By Class")
-
-# kable(t(Model3_nb_cm$byClass[c("Pos Pred Value", "Sensitivity","Specificity")]),
-#      digits = 4,
-#      caption = "Model 3 - Naive-Bayes Prediction Statistics By Class")
-
-# kable(t(Model3_mnlr_cm$byClass[c("Pos Pred Value", "Sensitivity","Specificity")]), 
-#      digits = 4,
-#      caption = "Model 3 - Multinomial Prediction Statistics By Class")
-
-# kable(accuracy_df, digits = 4, caption = "Model 3 - Overall Accuracy by Prediction Method")
 
 df1 <- data.frame(Method="RandomForest","Overall Accuracy"=Model3_rf_cm$overall["Accuracy"], "Pos Pred Value"=Model3_rf_cm$byClass["Pos Pred Value"], Sensitivity=Model3_rf_cm$byClass["Sensitivity"], Specificity=Model3_rf_cm$byClass["Specificity"], row.names = NULL)
 
