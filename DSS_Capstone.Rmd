@@ -1,5 +1,5 @@
 ---
-title: "Sentiment Analysis of Yelp Review Text for the Prediction of Yelp Star Ratings"
+title: "Yelp Restaurant Reviews : Sentiment Analysis for the Prediction of Star Ratings"
 author: "Kuan Siew Weng"
 date: "11 November 2015"
 fontsize: 9pt
