@@ -20,5 +20,5 @@ generate the intermediate results files, which are then loaded in the Rpres file
 In addition, the two wordclouds png file,s which were previously generated, needs
 to be in the same working directory as the Rpres file before generating.
 
-Regards,
-   Kuan Siew Weng 
+Regards,  
+  Kuan Siew Weng 
