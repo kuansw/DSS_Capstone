@@ -40,7 +40,7 @@ generation will take several hours to complete, due to the complexity of the sen
 
 To reproduce the slides, the Rmd report processing must first be completed as it 
 generates the intermediate results files, which are then loaded in the Rpres file.
-In addition, the two wordclouds png file,s which were previously generated, needs
+In addition, the two wordclouds png files, which were previously generated, needs
 to be in the same working directory as the Rpres file before generating.
 
 Regards,  
