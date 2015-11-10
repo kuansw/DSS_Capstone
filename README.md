@@ -1,6 +1,7 @@
 # JHU Data Science Specialization Capstone Project
 
-This Git repository contains my submission for Data Science Specialization Capstone Project.
+This Git repository contains my submission for Data Science Specialization Capstone Project, which is a study into Sentiment Analysis and the Prediction of Star Ratings
+of Yelp Restaurant Reviews from their Review Text.
 
 The submission comprise of the following files: 
 
