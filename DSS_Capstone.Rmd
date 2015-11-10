@@ -813,5 +813,5 @@ kable(rbind(df1, df2, df3), digits = 4, caption = "Thumbs-Up/Thumbs-Down Model -
 
 \ 
 
-To reproduce and review the results of this study, the R Markdown source for 
-this paper can be found at : [DSS_Capstone.Rmd - Kuan (2015)](https://github.com/kuansw/DSS_Capstone/blob/master/DSS_Capstone.Rmd).
+To re-run the analysis and reproduce this report, the R Markdown source for 
+this paper can be viewed and downloaded from my Github Repo: [DSS_Capstone Github Repo](https://github.com/kuansw/DSS_Capstone).
