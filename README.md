@@ -13,7 +13,7 @@ The submission comprise of the following files:
 
 To reproduce the report, put the review and business json datasets from the 
 Yelp Academic Dataset in the same working directory as the DSS_Capstone, and 
-run knitr.   The knitr process may took over 7 hours on a Macbook Air.
+run knitr.   For your information, the whole end-to-end process may take a while to complete run due to the complexity of the sentiment analysis and the amount of data to process.   On my Macbook Air, it took over 7 hours.
 
 To reproduce the slides, the report processing must first be completed to 
 generate the intermediate results files, which are then loaded in the Rpres file.
