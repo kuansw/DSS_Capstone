@@ -1,0 +1,295 @@
+
+Yelp Restaurant Reviews : Sentiment Analysis for the Prediction of Star Ratings
+========================================================
+author: Kuan Siew Weng 
+date: 11 November 2015
+css: DSS_Capstone-slides.css
+
+
+Can Review Text Sentiments Predict Star Ratings ?
+========================================================
+left: 60% 
+
+- Restaurants are very interested to get more insights into the sentiments of their customers expressed on online review sites like Yelp.
+
+- By itself, the star rating given in a Yelp review has limited value to the restaurants as there is no objective basis or reference.
+
+- Strong sentiments are often expressed in Yelp review texts, which restaurants are keen to understand and leverage.
+
+- Can text mining and machine learning methods be used to mine user sentiments in these review texts and to predict star ratings of the reviews?
+
+- If so, how accurate are they? 
+
+***
+
+<div class="midcenter" style="margin-left:130px; margin-top:-270px;">
+<span style="font-size: 0.5em;color:black;">1-star and 5-star Reviews Trigram WordClouds</span>
+<img src="1stars_trigram-wordcloud.png"></img>
+</div>
+<div class="midcenter" style="margin-left:130px; margin-top:30px;">
+<img src="5stars_trigram-wordcloud.png"></img>
+</div>
+
+
+
+Exploratory Data Analysis
+========================================================
+left: 60%
+
+- The data for this study are the restaurant reviews extracted
+from a 10% random sample of the Yelp Data Challenge 1.6M reviews dataset.
+- 98841 user reviews for 15464 restaurants.
+- Strong bias of reviewers to post positive reviews rather than negative reviews.  
+- Nearly 2 out of 3 restaurant reviews are rated 4 or 5 stars.
+- Most reviews are less than 100 words long although a few reviews even exceeded 400 words. 
+- However, the length of the reviews does not appear to be correlated to their star ratings.
+
+*** 
+
+```{r Stars Histogram Plot, echo=FALSE, fig.height=5.75, fig.cap="Histogram Plots of Reviews by Word Count and Star Ratings", cache=T, fig.align="center"}
+library(ggplot2)
+library(gridBase)
+library(gridExtra)
+
+restRevs <- readRDS("restRevs_10pct")
+
+g1 <- ggplot(data = restRevs, aes(x = stars, fill=stars))
+g1 <- g1 + geom_bar(aes(y=..count..), binwidth = 0.5)
+g1 <- g1 + labs(list(title = "Histogram of Reviews by Star Rating",
+              y = "Count", x = "Star Rating"))
+g1 <- g1 + theme(plot.title = element_text(size = rel(1.5)))
+g1 <- g1 + theme(axis.title = element_text(size = rel(1.2)))
+g1 <- g1 + theme(axis.text = element_text(size = rel(1.0)))
+g1 <- g1 + theme(legend.title = element_text(size = rel(1.0)))
+g1 <- g1 + theme(legend.text = element_text(size = rel(1.0)))
+
+g2 <- qplot(wc, data=restRevs, fill=stars, binwidth = 10, 
+            main="Histogram of Reviews by Text Length",
+            xlab="Review Text Length (in words)",
+            ylab="Count"
+            )
+g2 <- g2 + scale_x_continuous(breaks=seq(0,600,100))
+g2 <- g2 + coord_cartesian(xlim = c(0, 600))
+g2 <- g2 + theme(plot.title = element_text(size = rel(1.5)))
+g2 <- g2 + theme(axis.title = element_text(size = rel(1.2)))
+g2 <- g2 + theme(axis.text = element_text(size = rel(1.0)))
+g2 <- g2 + theme(legend.title = element_text(size = rel(1.0)))
+g2 <- g2 + theme(legend.text = element_text(size = rel(1.0)))
+# g2 <- g2 + theme(legend.position = "none")
+
+
+#g1 <- ggplot(zRevs, aes(x=factor(1), fill=stars)) + geom_bar(width=1)
+#g1 <- g1 + coord_polar(theta="y")
+#g1
+
+#g2 <- ggplot(restRevs, aes(x=factor(1), fill=stars)) + geom_bar(width=1)
+#g2 <- g2 + coord_polar(theta="y")
+#g2 <- g2 + labs(list(title = "Distribution of Reviews by Star Rating",
+#              y = "", x = ""))
+
+# grid.arrange(arrangeGrob(g2, g1, nrow=1, ncol=2))
+g1
+g2
+
+```
+
+
+Models and Methods
+========================================================
+class: small-code
+
+#### Sentiment Polarity Model
+- We use the Sentiment Polarity Model from the **qdap** package 
+
+- The **polarity()** function analyzes a given text and returns a sentiment score between -1 and 1.
+
+- A review-context-specific polarity dictionary associates sentiment weights to commonly used n-grams in the reviews. 
+
+- Sentiment polarity is analyzed at both sentence level and at whole-text level.
+```{r echo=F}
+suppressMessages(library(qdap))
+## Update positive and negative words dictionary
+remove <- c("bomb","unbelievable","addicted","fucking", "mashed")
+neg.words <- negative.words
+neg.words <- neg.words[! neg.words %in% remove]
+neg.words <- c("go somewhere else", "decided to leave",
+               "go anywhere else",
+               "worst customer service ever", "worst service ever", "worst experience ever",
+               "horrendous experience", "terrible customer service",
+               "waste of money", "save your money",
+               "food poisoning",
+               "speak to the manager", "pissed off", "why cant they", 
+               "fucking","wrecked","rudely", "inedible", neg.words)
+neg.wts <- rep(-4, length(neg.words))
+neg.wts[1:11] <- -10
+neg.wts[12:17] <- -7
+
+pos.words <- c("cant wait to go back", "cant wait to come back",
+               "come back", "coming back", "be back",
+               "go back", "going back", "be going back", 
+               "go there again", "go here again",
+               "worth the money",  "worth the hassle", "worth the wait",
+               "feel welcome",
+               "waste money","waste time","waste your money","waste my money", "waste your time", 
+               "best customer service ever", "best service ever", "best experience ever",
+               "to die for",
+               "addicted", "yummy", "unbelievable", "bomb", "crave", "stuffed", "tasty",
+               positive.words)
+pos.wts <- rep(1, length(pos.words))
+pos.wts[1:22] <- 7
+
+REVIEWS_DICT <- sentiment_frame(pos.words, pos.weights = pos.wts,
+                                neg.words, neg.weights = neg.wts)
+
+```
+```{r echo=T}
+polarity(sent_detect("This is worst place ever. Crap Food. Horrible service."), polarity.frame=REVIEWS_DICT, constrain=T)
+         
+```
+
+
+*** 
+
+#### Stars Rating Prediction Model
+
+- The stars rating prediction model formula used is:
+```{r eval=F}
+stars ~ ave.polarity + tot.sentences + tot.words +
+        pos.words.ct + neg.words.ct
+```
+
+- We use the **caret** package to partition the sample dataset (training: 70%, test: 30%); 
+
+- The model is fitted to the training dataset, using 3 classification methods with 3-fold cross-validation.
+    1. Random Forest
+    2. Naive-Bayes
+    3. Penalized Multinomial Regression
+
+- Finally, the 3 fitted models were tested with the unseen test dataset to produce the test results.
+
+
+Results and Discussion
+========================================================
+class: small-code
+
+#### Test Results Summary
+```{r Prediction Model2, echo=FALSE, cache=TRUE, messages=FALSE, smaller=TRUE}
+options(warn = -1)
+suppressMessages(library(data.table))
+
+# suppressMessages(library(caret))
+# suppressMessages(library(randomForest))
+# suppressMessages(library(nnet))
+# suppressMessages(library(MASS))
+# suppressMessages(library(klaR))
+
+# if (file.exists("polRevs_Model2")) {
+#    Model2_Revs <- readRDS("polRevs_Model2") 
+# }
+
+#set.seed(33833)
+#train_clean <- Model2_Revs[!is.na(ave.polarity),]
+#in_train <- createDataPartition(y=train_clean$stars, p=0.7, list=FALSE)
+#train_ds <- train_clean[in_train,]
+#xval_ds <- train_clean[-in_train,]
+
+#train_ctl <- trainControl(method="cv", number=3)
+    
+## Random Forest
+#set.seed(33833)
+#Model2_rf_fit <- train(stars ~ pos.words.ct + neg.words.ct +
+#                      ave.polarity + 
+#                      total.words + total.sentences, 
+#                  method="rf", data=train_ds, ntree=250, prox=FALSE,                      
+#                  trControl=train_ctl, 
+#                  trace=F)
+
+#Model2_rf_predicted <- predict(Model2_rf_fit, newdata=xval_ds)
+#Model2_rf_cm <- confusionMatrix(Model2_rf_predicted, xval_ds$stars)
+
+# cat("Model 2 - Random Forest Prediction Results\n")
+# Model2_rf_cm$table;cat("\n"); 
+# Model2_rf_cm$overall[c("Accuracy","Kappa")]
+# t(Model2_rf_cm$byClass[,c("Pos Pred Value", "Sensitivity","Specificity")])
+
+## Naive Bayes
+#set.seed(33833)
+#Model2_nb_fit <- train(stars ~ pos.words.ct + neg.words.ct +
+#                      ave.polarity + 
+#                      total.words + total.sentences, 
+#                  method="nb", data=train_ds,
+#                  trControl=train_ctl, 
+#                  trace=F)
+
+#Model2_nb_predicted <- predict(Model2_nb_fit, newdata=xval_ds)
+#Model2_nb_cm <- confusionMatrix(Model2_nb_predicted, xval_ds$stars)
+
+# cat("Model 2 - Naive Bayes Prediction Results\n")
+# Model2_nb_cm$table;cat("\n"); 
+# Model2_nb_cm$overall[c("Accuracy","Kappa")]
+# t(Model2_nb_cm$byClass[,c("Pos Pred Value", "Sensitivity","Specificity")])
+
+## multinomial logistic regression
+#set.seed(33833)
+#Model2_mnlr_fit <- train(stars ~ pos.words.ct + neg.words.ct +
+#                      ave.polarity + 
+#                      total.words + total.sentences, 
+#                  method="multinom", data=train_ds,
+#                  trControl=train_ctl, 
+#                  trace=F)
+
+#Model2_mnlr_predicted <- predict(Model2_mnlr_fit, newdata=xval_ds)
+#Model2_mnlr_cm <- confusionMatrix(Model2_mnlr_predicted, xval_ds$stars)
+
+# cat("Model 2 - MNLR Prediction Results\n")
+# Model2_mnlr_cm$table;cat("\n"); 
+# Model2_mnlr_cm$overall[c("Accuracy","Kappa")]
+
+
+
+Model2_rf_cm <- readRDS("Model2_rf_cm")
+Model2_nb_cm <- readRDS("Model2_nb_cm")
+Model2_mnlr_cm <- readRDS("Model2_mnlr_cm")
+
+
+
+accuracy_df <- data.frame(RandomForest = Model2_rf_cm$overall["Accuracy"],
+                          NaiveBayes = Model2_nb_cm$overall["Accuracy"],
+                          Multinomial = Model2_mnlr_cm$overall["Accuracy"])
+
+# kable(t(Model2_rf_cm$byClass[,c("Pos Pred Value", "Sensitivity","Specificity")]),
+#      digits = 4,
+#      caption = "Final Model - RandomForest Prediction Accuracy By Class")
+
+# kable(t(Model2_nb_cm$byClass[,c("Pos Pred Value", "Sensitivity","Specificity")]),
+#      digits = 4,
+#      caption = "Final Model - Naive-Bayes Prediction Accuracy By Class")
+```
+
+- The highest accuracy (41%) was attained by the Penalized Multinomial Regression method.
+
+- Overall Accuracy by Prediction Method
+```{r echo=F}
+kable(accuracy_df, digits = 4, caption = "Final Model - Overall Accuracy by Prediction Method")
+```
+  
+- Multinomial - Prediction Accuracy by Class
+```{r echo=F}
+kable(t(Model2_mnlr_cm$byClass[,c("Pos Pred Value", "Sensitivity","Specificity")]), 
+      digits = 4,
+      caption = "Final Model - Multinomial Prediction Accuracy By Class")
+```
+
+*** 
+
+#### Test Results Discussion
+- Overall stars prediction accuracy attained for all three methods are too low to be really useful.
+- Low sensitivity scores means most 2 and 3 stars reviews were misclassified.
+- Possible Reasons:  
+    1. One man's 2-stars is another man's 3-stars.
+    2. Presence of positive words even in negative reviews.
+    3. Use of slangs, swear words and sarcasm in reviews.
+
+- Sentiment Class Prediction is more accurate (76%), if 4-5 stars are considered as 
+one sentiment class, and 1-3 stars are considered as another sentiment class.  
+***(i.e. Thumbs-Up / Thumbs-Down Model)***
