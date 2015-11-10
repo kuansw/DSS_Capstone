@@ -37,9 +37,9 @@ The data used for this study is the academic dataset provided by the Yelp Datase
 Challenge Round 6 website, which included 1.6 million reviews by 366 thousand 
 users for 61 thousand businesses.
 
-As the focus of this study is on restaurant reviews, I will take a 10% random 
-sample of the provided review dataset, and do an inner join of the sample review 
-dataset to the business dataset by **business_id**, and select reviews that are
+As the focus of this study is on restaurant reviews, I have taken a 10% random 
+sample of the provided review dataset, and did an inner join of the sample review 
+dataset to the business dataset by **business_id**, and selected reviews that are
 categorized as "Restaurants" only.  The resulting cleaned dataset for analysis comprised 
 of 98841 reviews for 15464 restaurants.
 
@@ -489,7 +489,9 @@ within each star rating were narrowed as well, though outliers are still present
 \pagebreak
 
 ### Star Ratings Prediction Modeling
-After several iterations, the selected review sentiment model based on sentence-level polarity, and the final review stars prediction model formula contains the following predictor variables:  
+After several iterations, the selected review sentiment model is based on 
+sentence-level polarity, and the final review stars prediction model formula 
+contains the following predictor variables:  
 \ 
 - average polarity score returned by the **polarity()** function  
 \ 
@@ -498,9 +500,10 @@ After several iterations, the selected review sentiment model based on sentence-
 The three classification methods selected for the final prediction testing for 
 this study were Random Forest, Naive-Bayes and Penalized Multinomial Regression.  
 
-For training, the three methods were fitted on 70% of the restaurant 
-review sample dataset using 3-fold cross-validation, and thereafter tested on the 
-other 30% of the data.   
+Next, the polarity-analyzed restaurant review datasets were partitioned (70% for training 
+and 30% for testing); and the prediction model were fitted on the training dataset 
+using the three methods with 3-fold cross-validation.  Finally, the fitted models
+were evaluated for accuracy on the unseen testing dataset.
 
 
 # 3. Results
@@ -692,8 +695,8 @@ indicating that reviews rated at these levels were mostly misclassified, but pre
 # 4. Discussion 
 ### The Complexity of User Review Language 
 These results of this simple study show how complex natural language 
-processing is, and therefore how difficult for an algorithm to gauge the user 
-sentiment accurately from informal English text alone.  
+processing is, and how difficult it is for an algorithm to gauge the user 
+sentiment accurately from an informal English text alone.  
 
 Interestingly, it seems much harder to predict sentiment polarity correctly for 
 negative reviews as compared to  positive reviews.  There may be a number of 
@@ -719,8 +722,8 @@ detected by our simple review sentiment model.
 
 6. Spelling mistakes, e.g. "Graet food!!", were missed by our model. 
 
-It is therefore not surprising that the accuracy is so low, that it would not
-be very useful to predict the 5-star rating of the review from its text with these methods.
+It is therefore not surprising that the accuracy is so low, and it would not
+be very useful to predict the 5-star rating of the review from its text using these methods.
 
 ### The Alternative Thumbs-Up/Thumbs-Down Rating System
 In this final subsection, I would like to explore an alternative to the 5-star

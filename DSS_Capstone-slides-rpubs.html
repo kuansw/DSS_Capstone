@@ -896,11 +896,11 @@ from a 10% random sample of the Yelp Data Challenge 1.6M reviews dataset.</li>
 <li><p>Sentiment polarity is analyzed at both sentence level and at whole-text level.</p></li>
 </ul>
 
-<pre><code class="r">polarity(sent_detect(&quot;This is worst place ever. Crap Food. Horrible service.  Not coming back ever.&quot;), polarity.frame = REVIEWS_DICT, constrain=T)
+<pre><code class="r">polarity(sent_detect(&quot;This is worst place ever. Crap Food. Horrible service.&quot;), polarity.frame=REVIEWS_DICT, constrain=T)
 </code></pre>
 
 <pre><code>  all total.sentences total.words ave.polarity sd.polarity stan.mean.polarity
-1 all               4          13       -0.858       0.099             -8.629
+1 all               3           9        -0.83       0.101             -8.225
 </code></pre>
 
 
@@ -940,7 +940,7 @@ from a 10% random sample of the Yelp Data Challenge 1.6M reviews dataset.</li>
 <h4>Test Results Summary</h4>
 
 <ul>
-<li><p>The highest accuracy (41.18%) was attained by the Penalized Multinomial Regression method.</p></li>
+<li><p>The highest accuracy (41%) was attained by the Penalized Multinomial Regression method.</p></li>
 <li><p>Overall Accuracy by Prediction Method</p></li>
 </ul>
 
@@ -961,7 +961,7 @@ from a 10% random sample of the Yelp Data Challenge 1.6M reviews dataset.</li>
 </tbody></table>
 
 <ul>
-<li>Best Prediction Accuracy by Class (Multinomial)</li>
+<li>Multinomial - Prediction Accuracy by Class</li>
 </ul>
 
 <table><thead>
@@ -1018,9 +1018,9 @@ from a 10% random sample of the Yelp Data Challenge 1.6M reviews dataset.</li>
 <li>Presence of positive words even in negative reviews.</li>
 <li>Use of slangs, swear words and sarcasm in reviews.</li>
 </ol></li>
-<li><p>Sentiment Class Prediction can be more accurate (76%), if 4-5 stars are considered as 
+<li><p>Sentiment Class Prediction is more accurate (76%), if 4-5 stars are considered as 
 one sentiment class, and 1-3 stars are considered as another sentiment class.<br/>
-<strong><em>(Thumbs-Up / Thumbs-Down Model)</em></strong></p></li>
+<strong><em>(i.e. Thumbs-Up / Thumbs-Down Model)</em></strong></p></li>
 </ul>
 
 </div>
