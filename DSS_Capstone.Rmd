@@ -489,27 +489,28 @@ within each star rating were narrowed as well, though outliers are still present
 \pagebreak
 
 ### Star Ratings Prediction Modeling
-After several iterations, the selected review sentiment model is based on 
-sentence-level polarity, and the final review stars prediction model formula 
+The polarity-analyzed restaurant review datasets were partitioned (70% for training 
+and 30% for testing); and I fitted the prediction model with different combination of 
+features on the training dataset using the candidate classification methods with 3-fold cross-validation.  
+
+After several iterations of feature selection, the final review sentiment model selected 
+is based on sentence-level polarity, and the final review stars prediction model formula 
 contains the following predictor variables:  
 \ 
 - average polarity score returned by the **polarity()** function  
 \ 
 - total sentence count, total word count, positive word count, negative word count.
 
-The three classification methods selected for the final prediction testing for 
-this study were Random Forest, Naive-Bayes and Penalized Multinomial Regression.  
-
-Next, the polarity-analyzed restaurant review datasets were partitioned (70% for training 
-and 30% for testing); and the prediction model were fitted on the training dataset 
-using the three methods with 3-fold cross-validation.  Finally, the fitted models
-were evaluated for accuracy on the unseen testing dataset.
+Based on the best training accuracy results and also taking training time into consideration, 
+Random Forest, Naive-Bayes and Penalized Multinomial Regression were the three 
+methods selected for final prediction testing on the unseen testing dataset.
 
 
 # 3. Results
-Model testing for all three methods returned consistent accuracy results to those achieved during training, suggesting that overfitting may not be a concern.  The accuracy attained during testing for each of these methods are summarized in the following set of tables:
-\ 
-
+Model testing for all three methods returned consistent accuracy results to those 
+achieved during training, suggesting that overfitting may not be a concern. 
+The accuracy attained during testing for each of these methods are summarized 
+in the following set of tables:
 ```{r Predict Model1, echo=FALSE, cache=TRUE, messages=FALSE, smaller=TRUE, eval=FALSE}
 #
 #  This R code chunk uses the caret package to train and predict models based on 
@@ -686,9 +687,9 @@ saveRDS(accuracy_df, "Model2_accuracy_df")
 The results showed that the overall accuracy attained for all three methods are 
 rather low, with the highest being 41%, by the Penalized Multinomial Regression method
 
-Examining the prediction statistics by class, it is observed that the prediction sensitivity for star ratings 2 and 3 are quite low for all three methods, 
-indicating that reviews rated at these levels were mostly misclassified, but prediction measures were much better for ratings 1 and 5.
-
+However,the prediction sensitivity for star ratings 2 and 3 are low for all three methods, 
+implying that at these levels, reviews were mostly misclassified; even though accuracy 
+was better for other ratings.
 
 \pagebreak
 
